@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mTrueButton;
     private Button mFlaseButton;
     private Button mNextButton;
+    private Button mPrevButton;
     private TextView mQuestionTextView;
     private Question[] mQuestionBank = new Question[]{
             new Question(R.string.question_africa, false),
@@ -33,6 +34,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
+        mQuestionTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                updateQuestion();
+            }
+        });
 
         mTrueButton = (Button) findViewById(R.id.true_button);
         mTrueButton.setOnClickListener(new View.OnClickListener() {
@@ -60,7 +68,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        updateQuestion();
+        mPrevButton = (Button)findViewById(R.id.prev_button);
+        mPrevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mCurrentIndex == 0){
+                    mCurrentIndex = mQuestionBank.length;
+                }
+                mCurrentIndex = mCurrentIndex - 1;
+                updateQuestion();
+            }
+        });
+        updateQuestion();   //初始化
     }
 
     private void updateQuestion(){
