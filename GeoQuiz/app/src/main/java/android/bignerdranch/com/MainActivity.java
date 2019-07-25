@@ -15,10 +15,11 @@ import org.w3c.dom.Text;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
+    private static final String KEY_INDEX = "index";
     private Button mTrueButton;
     private Button mFlaseButton;
-    private ImageButton mNextButton;
-    private ImageButton mPrevButton;
+    private Button mNextButton;
+    private Button mPrevButton;
     private TextView mQuestionTextView;
     private Question[] mQuestionBank = new Question[]{
             new Question(R.string.question_africa, false),
@@ -36,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate(Bundle) called");
         setContentView(R.layout.activity_main);
+
+        if(savedInstanceState != null){
+            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX,0);
+        }
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
         mQuestionTextView.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mNextButton = (ImageButton) findViewById(R.id.next_button);
+        mNextButton = (Button)findViewById(R.id.next_button);
         mNextButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -72,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mPrevButton = (ImageButton)findViewById(R.id.prev_button);
+        mPrevButton = (Button)findViewById(R.id.prev_button);
         mPrevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,6 +109,12 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onPause() called");
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        Log.i(TAG, "onSaveInstanceState");
+        savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+    }
     @Override
     public void onStop(){
         super.onStop();
