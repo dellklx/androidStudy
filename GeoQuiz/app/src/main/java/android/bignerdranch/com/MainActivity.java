@@ -16,18 +16,21 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String KEY_ANSWER = "KEY_ANSWER";
     private Button mTrueButton;
     private Button mFlaseButton;
     private Button mNextButton;
     private Button mPrevButton;
+    private int trueCount = 0;
+    private int falseCount = 0;
     private TextView mQuestionTextView;
     private Question[] mQuestionBank = new Question[]{
-            new Question(R.string.question_africa, false),
-            new Question(R.string.question_americas, true),
-            new Question(R.string.question_asia, true),
-            new Question(R.string.question_australia, true),
-            new Question(R.string.question_mideast, false),
-            new Question(R.string.question_oceans, true)
+            new Question(R.string.question_africa, false, 0),
+            new Question(R.string.question_americas, true, 0),
+            new Question(R.string.question_asia, true, 0),
+            new Question(R.string.question_australia, true, 0),
+            new Question(R.string.question_mideast, false, 0),
+            new Question(R.string.question_oceans, true, 0)
     };
 
     private int mCurrentIndex = 0;
@@ -40,7 +43,17 @@ public class MainActivity extends AppCompatActivity {
 
         if(savedInstanceState != null){
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX,0);
+            int[] questionStatus = savedInstanceState.getIntArray(KEY_ANSWER);
+            for(int i=0; i<mQuestionBank.length; i++){
+                mQuestionBank[i].setMisAnswered(questionStatus[i]);
+                if(questionStatus[i] == 1) {
+                    trueCount += 1;
+                }else if(questionStatus[i] == -1){
+                    falseCount += 1;
+                }
+            }
         }
+
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
         mQuestionTextView.setOnClickListener(new View.OnClickListener() {
@@ -56,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 checkAnswer(true);
+                updateQuestion();
             }
         });
 
@@ -65,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // challenge,set toast location
                 checkAnswer(false);
+                updateQuestion();
             }
         });
 
@@ -114,6 +129,11 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        int[] answerList = new int[mQuestionBank.length];
+        for(int i=0; i<mQuestionBank.length; i++){
+            answerList[i] = mQuestionBank[i].getMisAnswered();
+        }
+        savedInstanceState.putIntArray(KEY_ANSWER, answerList);
     }
     @Override
     public void onStop(){
@@ -130,6 +150,8 @@ public class MainActivity extends AppCompatActivity {
     private void updateQuestion(){
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
+        ButtonEnabled();
+
     }
 
     private void checkAnswer(boolean userPressedTrue){
@@ -139,10 +161,29 @@ public class MainActivity extends AppCompatActivity {
 
         if(userPressedTrue == answerIsTrue){
             messageResId = R.string.correct_toast;
+            mQuestionBank[mCurrentIndex].setMisAnswered(1);
+            trueCount += 1;
         }else{
+            mQuestionBank[mCurrentIndex].setMisAnswered(-1);
             messageResId = R.string.incorrect_taost;
+            falseCount += 1;
         }
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+        if(trueCount + falseCount == mQuestionBank.length) {
+            int result = (int)((float)trueCount / mQuestionBank.length * 100.0);
+            Toast.makeText(this, String.valueOf(result), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void ButtonEnabled(){
+        if(mQuestionBank[mCurrentIndex].getMisAnswered() != 0){
+            mTrueButton.setEnabled(false);
+            mFlaseButton.setEnabled(false);
+        }else{
+            mTrueButton.setEnabled(true);
+            mFlaseButton.setEnabled(true);
+        }
     }
 }
