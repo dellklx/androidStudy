@@ -1,5 +1,6 @@
 package android.bignerdranch.com;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_ANSWER = "KEY_ANSWER";
     private Button mTrueButton;
     private Button mFlaseButton;
+    private Button mCheatButton;
     private Button mNextButton;
     private Button mPrevButton;
     private int trueCount = 0;
@@ -83,6 +85,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mCheatButton = (Button)findViewById(R.id.cheat_button);
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+                Intent intent = CheatActivity.newIntent(MainActivity.this, answerIsTrue);
+                startActivity(intent);
+            }
+        });
         mNextButton = (Button)findViewById(R.id.next_button);
         mNextButton.setOnClickListener(new View.OnClickListener(){
             @Override
