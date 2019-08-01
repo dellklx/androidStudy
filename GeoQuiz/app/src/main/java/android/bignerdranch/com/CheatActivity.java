@@ -11,6 +11,7 @@ import android.widget.TextView;
 public class CheatActivity extends AppCompatActivity {
 
     private static final String EXTRA_ANSWER_IS_TRUE = "com.bignerdranch.android.geoquiz.answer_is_ture";
+    private static final String EXTRA_ANSWER_SHOWN = "com.bignerdranch.android.geoquiz.answer_shown";
     private boolean mAnswerIsTrue;
     private TextView mAnswerTextView;
     private Button mShowAnswerButton;
@@ -19,6 +20,10 @@ public class CheatActivity extends AppCompatActivity {
         Intent intent = new Intent(packageContent, CheatActivity.class);
         intent.putExtra(EXTRA_ANSWER_IS_TRUE, answerIsTrue);
         return intent;
+    }
+
+    public static boolean wasAnswerShown(Intent result){
+        return result.getBooleanExtra(EXTRA_ANSWER_SHOWN, false);
     }
 
     @Override
@@ -36,11 +41,17 @@ public class CheatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(mAnswerIsTrue){
                     mAnswerTextView.setText(R.string.true_button);
-                }else{
+                }else {
                     mAnswerTextView.setText(R.string.false_button);
                 }
+                setAnswerShowResult(true);
             }
         });
+    }
 
+    private void setAnswerShowResult(boolean isAnswerShown){
+        Intent data = new Intent();
+        data.putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown);
+        setResult(RESULT_OK, data);
     }
 }
